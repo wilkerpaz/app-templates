@@ -16,7 +16,7 @@ export async function logTraceToDatabricks(payload: TracePayload) {
   const experimentId = process.env.DATABRICKS_SERVING_EXPERIMENT;
   
   if (!experimentId) {
-    console.warn('[MLflow] Experiment ID not configured. Skipping trace.');
+    console.warn('[MLflow] Experiment ID not configured.');
     return;
   }
 
@@ -25,7 +25,6 @@ export async function logTraceToDatabricks(payload: TracePayload) {
     const host = getHostUrl();
     const url = `${host}/api/2.0/mlflow/traces`;
 
-    // Serializa inputs/outputs para garantir formato JSON string
     const inputsJson = JSON.stringify([{ role: "user", content: payload.userInput || "" }]);
     const outputsJson = JSON.stringify([{ role: "assistant", content: payload.modelOutput || "" }]);
 
@@ -34,20 +33,24 @@ export async function logTraceToDatabricks(payload: TracePayload) {
       timestamp_ms: payload.startTime,
       execution_time_ms: payload.endTime - payload.startTime,
       request_metadata: {
-        // --- AQUI ESTÁ A CORREÇÃO BASEADA NA SUA IMAGEM ---
-        // Usando exatamente as chaves que a documentação pede
+        // As chaves que o seu exemplo confirmou
         "mlflow.trace.session": payload.chatId,
         "mlflow.trace.user": payload.userEmail || "unknown",
-        // Adicionamos o Request ID para garantir unicidade da mensagem
-        "mlflow.trace.request": payload.messageId
+        
+        // --- CHAVE NOVA IMPORTANTE ---
+        // O decorador @mlflow.trace adiciona isso automaticamente.
+        // Sem isso, o backend pode rejeitar o trace por não saber que tipo é.
+        "mlflow.spanType": "LLM", 
+        "mlflow.spanName": "chat_interaction"
       },
+      // Nome da operação no grafo de trace
       name: "chat_interaction",
       inputs: inputsJson,
       outputs: outputsJson,
       status: "OK"
     };
 
-    console.log("[MLflow] Sending trace for Session ID:", payload.chatId);
+    console.log("[MLflow] Sending trace for Session:", payload.chatId);
 
     const response = await fetch(url, {
       method: 'POST',
