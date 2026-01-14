@@ -43,7 +43,7 @@ import {
 } from '@chat-template/ai-sdk-providers/tools';
 import { extractApprovalStatus } from '@chat-template/ai-sdk-providers/mcp';
 import { ChatSDKError } from '@chat-template/core/errors';
-import { logTraceToDatabricks } from '../services/mlflow-service';
+import { logTraceToDatabricks } from '@/services/mlflow-service';
 
 export const chatRouter: RouterType = Router();
 
