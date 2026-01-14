@@ -17,5 +17,7 @@ configRouter.get('/', (_req: Request, res: Response) => {
     features: {
       chatHistory: isDatabaseAvailable(),
     },
+    servingEndpoint: process.env.DATABRICKS_SERVING_ENDPOINT || 'Endpoint Desconhecido',
+    servingExperiment: process.env.DATABRICKS_SERVING_EXPERIMENT || 'Experimento Desconhecido',
   });
 });

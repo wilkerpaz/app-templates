@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
+import { useSession } from '@/contexts/SessionContext';
 
 export const Greeting = () => {
+  const { session } = useSession();
+  const userEmail = session?.user?.email;
   return (
     <div
       key="overview"
@@ -13,7 +16,7 @@ export const Greeting = () => {
         transition={{ delay: 0.5 }}
         className="font-semibold text-xl md:text-2xl"
       >
-        Hello there!
+        Hello there{userEmail ? `, ${userEmail}` : ''}!
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}

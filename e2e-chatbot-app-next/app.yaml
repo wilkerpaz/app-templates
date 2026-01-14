@@ -4,3 +4,6 @@ runtime: nodejs20
 env:
   - name: DATABRICKS_SERVING_ENDPOINT
     valueFrom: serving-endpoint
+
+  - name: DATABRICKS_SERVING_EXPERIMENT
+    valueFrom: experiment

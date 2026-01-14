@@ -6,6 +6,10 @@ variables:
     description: "Name of the model serving endpoint to be used by the app"
     # TODO: uncomment the line below and specify a default value to avoid needing to specify it on each deployment
     # default: "your-serving-endpoint-name-goes-here"
+  experiment_id:
+    description: "ID of the MLflow Experiment used by the Agent"
+    # TODO: uncomment the line below and specify a default value to avoid needing to specify it on each deployment
+    # default: "your-id-mlflow-goes-here"
   database_instance_name:
     description: "Base name of the Lakebase database instance"
     default: "chatbot-lakebase"
@@ -44,6 +48,11 @@ resources:
         #     database_name: databricks_postgres
         #     instance_name: ${resources.database_instances.chatbot_lakebase.name}
         #     permission: CAN_CONNECT_AND_CREATE
+        - name: experiment
+          description: "MLflow Experiment ID for the AI agent"
+          experiment:
+            id: ${var.experiment_id}
+            permission: CAN_MANAGE
 
 targets:
   dev:

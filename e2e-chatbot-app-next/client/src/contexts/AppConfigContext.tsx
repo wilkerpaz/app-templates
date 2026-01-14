@@ -6,6 +6,8 @@ interface ConfigResponse {
   features: {
     chatHistory: boolean;
   };
+  servingEndpoint?: string;
+  servingExperiment?: string;
 }
 
 interface AppConfigContextType {
