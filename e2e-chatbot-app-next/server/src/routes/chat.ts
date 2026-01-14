@@ -43,6 +43,7 @@ import {
 } from '@chat-template/ai-sdk-providers/tools';
 import { extractApprovalStatus } from '@chat-template/ai-sdk-providers/mcp';
 import { ChatSDKError } from '@chat-template/core/errors';
+import { logTraceToDatabricks } from '../services/mlflow-service';
 
 export const chatRouter: RouterType = Router();
 
@@ -87,6 +88,12 @@ chatRouter.post('/', requireAuth, async (req: Request, res: Response) => {
       selectedChatModel: string;
       selectedVisibilityType: VisibilityType;
     } = requestBody;
+
+    const startTime = Date.now();
+    const userContent = message?.parts
+      .filter((p: any) => p.type === 'text')
+      .map((p: any) => p.text)
+      .join('') || "Continuation/System";
 
     const session = req.session;
     if (!session) {
@@ -259,6 +266,27 @@ chatRouter.post('/', requireAuth, async (req: Request, res: Response) => {
             },
           ],
         });
+
+        try {
+            const endTime = Date.now();
+            const modelOutput = responseMessage.parts
+              .filter((p: any) => p.type === 'text')
+              .map((p: any) => p.text)
+              .join('');
+
+            // Não usamos await aqui propositalmente para não travar a resposta
+            logTraceToDatabricks({
+                chatId: id,
+                messageId: responseMessage.id,
+                userInput: userContent,
+                modelOutput: modelOutput,
+                startTime: startTime,
+                endTime: endTime,
+                userEmail: session?.user?.email
+            });
+        } catch (e) {
+            console.error("Failed to log trace", e);
+        }
 
         if (finalUsage) {
           try {
