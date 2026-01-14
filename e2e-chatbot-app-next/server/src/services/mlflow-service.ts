@@ -25,26 +25,21 @@ export async function logTraceToDatabricks(payload: TracePayload) {
     const host = getHostUrl();
     const url = `${host}/api/2.0/mlflow/traces`;
 
-    // Serializa inputs/outputs para garantir que o formato seja aceito
-    const inputsJson = JSON.stringify([{ role: "user", content: payload.userInput }]);
-    const outputsJson = JSON.stringify([{ role: "assistant", content: payload.modelOutput }]);
+    // Serializa inputs/outputs para garantir formato JSON string
+    const inputsJson = JSON.stringify([{ role: "user", content: payload.userInput || "" }]);
+    const outputsJson = JSON.stringify([{ role: "assistant", content: payload.modelOutput || "" }]);
 
     const body = {
       experiment_id: experimentId,
       timestamp_ms: payload.startTime,
       execution_time_ms: payload.endTime - payload.startTime,
       request_metadata: {
-        // --- CORREÇÃO AQUI ---
-        // Usamos APENAS as chaves mlflow. que o Databricks usa para agrupar sessões.
-        // Removemos chaves personalizadas que podem causar rejeição (user_email, model_name, etc)
-        // Se precisar de email, coloque nas tags (tags é outro campo, mas vamos simplificar primeiro)
-        "mlflow.traceConversationId": payload.chatId,
-        "mlflow.traceRequestId": payload.messageId
-      },
-      // Tags são mais flexíveis para metadados personalizados
-      tags: {
-        "user_email": payload.userEmail || "anonymous",
-        "source": "chat-app"
+        // --- AQUI ESTÁ A CORREÇÃO BASEADA NA SUA IMAGEM ---
+        // Usando exatamente as chaves que a documentação pede
+        "mlflow.trace.session": payload.chatId,
+        "mlflow.trace.user": payload.userEmail || "unknown",
+        // Adicionamos o Request ID para garantir unicidade da mensagem
+        "mlflow.trace.request": payload.messageId
       },
       name: "chat_interaction",
       inputs: inputsJson,
@@ -52,7 +47,7 @@ export async function logTraceToDatabricks(payload: TracePayload) {
       status: "OK"
     };
 
-    console.log("[MLflow] Sending trace for conversation:", payload.chatId);
+    console.log("[MLflow] Sending trace for Session ID:", payload.chatId);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -67,7 +62,7 @@ export async function logTraceToDatabricks(payload: TracePayload) {
       const errText = await response.text();
       console.error(`[MLflow ERROR] ${response.status}: ${errText}`);
     } else {
-      console.log(`[MLflow SUCCESS] Trace logged.`);
+      console.log(`[MLflow SUCCESS] Trace logged successfully.`);
     }
 
   } catch (error) {
