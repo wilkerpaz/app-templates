@@ -177,7 +177,7 @@ const PurePreviewMessage = ({
                     <MessageContent
                       data-testid="message-content"
                       className={cn({
-                        'w-fit break-words rounded-2xl px-3 py-2 text-right text-white':
+                        'w-fit break-words rounded-2xl px-3 py-2 text-left text-white':
                           message.role === 'user',
                         'bg-transparent px-0 py-0 text-left':
                           message.role === 'assistant',
@@ -330,15 +330,20 @@ const PurePreviewMessage = ({
 
             // Support for citations/annotations
             if (type === 'source-url') {
+              const normalizedUrl = part.url.replace(
+                'http://localhost:30003/',
+                'https://adb-7534486785283121.1.azuredatabricks.net/'
+              );
+
               return (
                 <a
                   key={key}
-                  href={part.url}
+                  href={normalizedUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-baseline text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  <sup className="text-xs">[{part.title || part.url}]</sup>
+                  <sup className="text-xs">[{part.title || normalizedUrl}]</sup>
                 </a>
               );
             }

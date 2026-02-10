@@ -16,7 +16,7 @@ export const Greeting = () => {
         transition={{ delay: 0.5 }}
         className="font-semibold text-xl md:text-2xl"
       >
-        Hello there{userEmail ? `, ${userEmail}` : ''}!
+        Olá {userEmail ? `, ${userEmail}` : ''}!
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -25,7 +25,7 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-xl text-zinc-500 md:text-2xl"
       >
-        How can I help you today?
+        Como eu posso ajudar hoje?
       </motion.div>
     </div>
   );

@@ -51,13 +51,12 @@ resources:
         - name: experiment
           description: "MLflow Experiment ID for the AI agent"
           experiment:
-            id: ${var.experiment_id}
+            experiment_id: ${var.experiment_id}
             permission: CAN_MANAGE
 
 targets:
   dev:
     mode: development
-    default: true
     variables:
       resource_name_suffix: dev-${workspace.current_user.domain_friendly_name}
 
@@ -68,5 +67,6 @@ targets:
 
   prod:
     mode: production
+    default: true
     variables:
       resource_name_suffix: "prod"

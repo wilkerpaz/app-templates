@@ -16,8 +16,7 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
   const { chatHistoryEnabled } = useAppConfig();
   const suggestedActions = [
-    'How can you help me?',
-    'Tell me something I might not know',
+    'Conte-me algo sobre as políticas e normas.',
   ];
 
   return (
@@ -42,7 +41,7 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
                 parts: [{ type: 'text', text: suggestion }],
               });
             }}
-            className="h-auto w-full whitespace-normal p-3 text-left"
+            className="h-auto w-full whitespace-normal p-3 text-center"
           >
             {suggestedAction}
           </Suggestion>
