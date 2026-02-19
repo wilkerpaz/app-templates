@@ -330,20 +330,15 @@ const PurePreviewMessage = ({
 
             // Support for citations/annotations
             if (type === 'source-url') {
-              const normalizedUrl = part.url.replace(
-                'http://localhost:30003/',
-                'https://adb-7534486785283121.1.azuredatabricks.net/'
-              );
-
               return (
                 <a
                   key={key}
-                  href={normalizedUrl}
+                  href={part.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-baseline text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  <sup className="text-xs">[{part.title || normalizedUrl}]</sup>
+                  <sup className="text-xs">[{part.title || part.url}]</sup>
                 </a>
               );
             }
